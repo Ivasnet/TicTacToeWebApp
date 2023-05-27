@@ -5,12 +5,12 @@ namespace TicTacToeGame.Core
 	public class GameController
 	{
 		public Board GameBoard { get; private set; }
-		public Player CrossPlayer { get; private set; }
-		public Player ZeroPlayer { get; private set; }
-		public Player CurrentPlayer { get; private set; }
+		public GamePlayer CrossPlayer { get; private set; }
+		public GamePlayer ZeroPlayer { get; private set; }
+		public GamePlayer CurrentPlayer { get; private set; }
 		public WinnerType Winner { get; private set; }
 
-		public GameController(Player crossPlayer, Player zeroPlayer)
+		public GameController(GamePlayer crossPlayer, GamePlayer zeroPlayer)
 		{
 			CrossPlayer = crossPlayer;
 			ZeroPlayer = zeroPlayer;

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TicTacToeWebApp.Data;
 
@@ -10,9 +11,10 @@ using TicTacToeWebApp.Data;
 namespace TicTacToeWebApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230525213913_add_AppUser")]
+    partial class add_AppUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.16");
@@ -219,23 +221,21 @@ namespace TicTacToeWebApp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("CrossPlayerId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("CrossPlayer")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("Date")
+                    b.Property<DateTime>("Date")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("WinnerType")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("ZeroPlayerId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("ZeroPlayer")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CrossPlayerId");
-
-                    b.HasIndex("ZeroPlayerId");
 
                     b.ToTable("Games");
                 });
@@ -267,9 +267,8 @@ namespace TicTacToeWebApp.Migrations
 
             modelBuilder.Entity("TicTacToeWebApp.Data.Models.Player", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("Draws")
                         .HasColumnType("INTEGER");
@@ -287,17 +286,10 @@ namespace TicTacToeWebApp.Migrations
                     b.Property<int>("Scores")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("Wins")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
 
                     b.ToTable("Players");
                 });
@@ -353,21 +345,6 @@ namespace TicTacToeWebApp.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("TicTacToeWebApp.Data.Models.Game", b =>
-                {
-                    b.HasOne("TicTacToeWebApp.Data.Models.Player", "CrossPlayer")
-                        .WithMany()
-                        .HasForeignKey("CrossPlayerId");
-
-                    b.HasOne("TicTacToeWebApp.Data.Models.Player", "ZeroPlayer")
-                        .WithMany()
-                        .HasForeignKey("ZeroPlayerId");
-
-                    b.Navigation("CrossPlayer");
-
-                    b.Navigation("ZeroPlayer");
-                });
-
             modelBuilder.Entity("TicTacToeWebApp.Data.Models.Move", b =>
                 {
                     b.HasOne("TicTacToeWebApp.Data.Models.Game", null)
@@ -379,7 +356,7 @@ namespace TicTacToeWebApp.Migrations
                 {
                     b.HasOne("TicTacToeWebApp.Data.Models.AppUser", "AppUser")
                         .WithOne("Player")
-                        .HasForeignKey("TicTacToeWebApp.Data.Models.Player", "UserId")
+                        .HasForeignKey("TicTacToeWebApp.Data.Models.Player", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

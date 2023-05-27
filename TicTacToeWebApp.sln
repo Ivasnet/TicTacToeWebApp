@@ -5,7 +5,7 @@ VisualStudioVersion = 17.6.33717.318
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicTacToeWebApp", "TicTacToeWebApp\TicTacToeWebApp.csproj", "{E87F478E-2605-468C-A0A9-9D1840EC32A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicTacToeGame", "TicTacToeGame\TicTacToeGame.csproj", "{7FCA44A0-491C-42E4-AEA8-46D3C8AFE1F8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicTacToeGame", "TicTacToeGame\TicTacToeGame.csproj", "{7FCA44A0-491C-42E4-AEA8-46D3C8AFE1F8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

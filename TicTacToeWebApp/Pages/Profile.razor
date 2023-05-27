@@ -1,0 +1,60 @@
+﻿@page "/playerprofile"
+
+<PageTitle>Мой профиль</PageTitle>
+
+@using TicTacToeGame.Models;
+@using TicTacToeWebApp.Data
+@using TicTacToeWebApp.Data.Abstractions;
+@using TicTacToeWebApp.Data.Models;
+@inject IDbAccess db
+
+
+<AuthorizeView>
+	<Authorized>
+		<h3>Мой профиль</h3>
+
+		@if (CurrentPlayer is null)
+		{
+			CurrentPlayer = db.GetPlayerByNameAsync(context.User.Identity.Name).GetAwaiter().GetResult();
+		}
+
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Номер</th>
+					<th>Соперник</th>
+					<th>Время</th>
+					<th>Результат</th>
+				</tr>
+			</thead>
+			@{
+				db.AddGameAsync(new Game
+				{
+					Date = DateTime.Now,
+					WinnerType = WinnerType.CrossPlayer
+				}, "asdasd@qwee", CurrentPlayer.Name).ConfigureAwait(false).GetAwaiter().GetResult();
+			}
+			@foreach (var game in db.GetUserGamesAsync(CurrentPlayer).GetAwaiter().GetResult())
+			{
+				<tr>
+					<td>@game.Id</td>
+					<td>@game.Id</td>
+					<td>@game.Date</td>
+					<td>@game.WinnerType</td>
+				</tr>
+			}
+		</table>
+	</Authorized>
+	<NotAuthorized>
+		<h3>Для просмотра данной страницы, пожалуйста, <b>зарегистрируйтесь</b> на платформе. 
+			это не займёт много врмени!</h3>
+	</NotAuthorized>
+</AuthorizeView>
+
+
+
+@code {
+	//string userName = DbContext.Users.First(x => x.UserName == context.Identity.User.Name).UserName;
+
+	Player? CurrentPlayer { get; set; }
+}

@@ -4,15 +4,15 @@ using TicTacToeWebApp.Data.Models;
 
 namespace TicTacToeWebApp.Data
 {
-    public class AppDbContext : IdentityDbContext
+	public class AppDbContext : IdentityDbContext<AppUser>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
             
         }
 
-        public DbSet<Player> Players { get; set; }
-        public DbSet<Game> Games { get; set; }
-        public DbSet<Move>? Moves { get; set; }
+        public DbSet<Player> Players { get; set; } = null!;
+        public DbSet<Game> Games { get; set; } = null!;
+		public DbSet<Move> Moves { get; set; } = null!;
     }
 }

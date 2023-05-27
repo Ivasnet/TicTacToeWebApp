@@ -1,5 +1,16 @@
-﻿<AuthorizeView>
+﻿@using TicTacToeWebApp.Data.Abstractions;
+@using TicTacToeWebApp.Data.Controllers;
+@using TicTacToeWebApp.Data;
+@inject IDbAccess db
+
+<AuthorizeView>
 	<Authorized>
+		@if (!db.IsPlayerExistsAsync(context.User.Identity.Name).Result)
+		{
+			db.AddPlayerAsync(context.User.Identity.Name)
+			.GetAwaiter()
+			.GetResult();
+		}
 		<a href="Identity/Account/Manage">@context.User.Identity.Name</a>
 		<form method="post" action="Identity/Account/LogOut">
 			<button type="submit" class="nav-link btn btn-link">Log out</button>
@@ -11,6 +22,6 @@
 	</NotAuthorized>
 </AuthorizeView>
 
-@code {
+@code{
 
 }

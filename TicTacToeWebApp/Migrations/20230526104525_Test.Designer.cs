@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TicTacToeWebApp.Data;
 
@@ -10,9 +11,10 @@ using TicTacToeWebApp.Data;
 namespace TicTacToeWebApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230526104525_Test")]
+    partial class Test
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.16");
@@ -219,16 +221,16 @@ namespace TicTacToeWebApp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("CrossPlayerId")
+                    b.Property<int>("CrossPlayerId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("Date")
+                    b.Property<DateTime>("Date")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("WinnerType")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("ZeroPlayerId")
+                    b.Property<int>("ZeroPlayerId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -296,7 +298,7 @@ namespace TicTacToeWebApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
+                    b.HasIndex("Name")
                         .IsUnique();
 
                     b.ToTable("Players");
@@ -357,11 +359,15 @@ namespace TicTacToeWebApp.Migrations
                 {
                     b.HasOne("TicTacToeWebApp.Data.Models.Player", "CrossPlayer")
                         .WithMany()
-                        .HasForeignKey("CrossPlayerId");
+                        .HasForeignKey("CrossPlayerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("TicTacToeWebApp.Data.Models.Player", "ZeroPlayer")
                         .WithMany()
-                        .HasForeignKey("ZeroPlayerId");
+                        .HasForeignKey("ZeroPlayerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("CrossPlayer");
 
@@ -379,7 +385,7 @@ namespace TicTacToeWebApp.Migrations
                 {
                     b.HasOne("TicTacToeWebApp.Data.Models.AppUser", "AppUser")
                         .WithOne("Player")
-                        .HasForeignKey("TicTacToeWebApp.Data.Models.Player", "UserId")
+                        .HasForeignKey("TicTacToeWebApp.Data.Models.Player", "Name")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
