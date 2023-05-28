@@ -2,6 +2,7 @@
 
 <PageTitle>Мой профиль</PageTitle>
 
+@using System.Text;
 @using TicTacToeGame.Models;
 @using TicTacToeWebApp.Data
 @using TicTacToeWebApp.Data.Abstractions;
@@ -17,37 +18,50 @@
 		{
 			CurrentPlayer = db.GetPlayerByNameAsync(context.User.Identity.Name).GetAwaiter().GetResult();
 		}
+		<table class="table">
+			<thead>
+				<tr>
+					<th style="text-align:center">Всего игр</th>
+					<th style="text-align:center">Очков</th>
+					<th style="text-align:center">Победы</th>
+					<th style="text-align:center">Ничьи</th>
+					<th style="text-align:center">Поражения</th>
+				</tr>
+			</thead>
+				<tr>
+					<td class="row-cols-1" style="text-align:center">@CurrentPlayer.Games</td>
+					<td class="row-cols-2" style="text-align:center">@CurrentPlayer.Scores</td>
+					<td class="row-cols-3" style="text-align:center">@CurrentPlayer.Wins</td>
+					<td class="row-cols-4" style="text-align:center">@CurrentPlayer.Draws</td>
+					<td class="row-cols-5" style="text-align:center">@CurrentPlayer.Loses</td>
+				</tr>
+		</table>
 
 		<table class="table">
 			<thead>
 				<tr>
-					<th>Номер</th>
-					<th>Соперник</th>
-					<th>Время</th>
-					<th>Результат</th>
+					<th style="text-align:center">Номер игры в системе</th>
+					<th style="text-align:center">Игрок "Крестики"</th>
+					<th style="text-align:center">Игрок "Нолики"</th>
+					<th style="text-align:center">Время</th>
+					<th style="text-align:center">Результат</th>
 				</tr>
 			</thead>
-			@{
-				db.AddGameAsync(new Game
-				{
-					Date = DateTime.Now,
-					WinnerType = WinnerType.CrossPlayer
-				}, "asdasd@qwee", CurrentPlayer.Name).ConfigureAwait(false).GetAwaiter().GetResult();
-			}
 			@foreach (var game in db.GetUserGamesAsync(CurrentPlayer).GetAwaiter().GetResult())
 			{
 				<tr>
-					<td>@game.Id</td>
-					<td>@game.Id</td>
-					<td>@game.Date</td>
-					<td>@game.WinnerType</td>
+					<td class="row-cols-1" style="text-align:center">@game.Id</td>
+					<td class="row-cols-2" style="text-align:center">@game.CrossPlayer.Name</td>
+					<td class="row-cols-3" style="text-align:center">@game.ZeroPlayer.Name</td>
+					<td class="row-cols-4" style="text-align:center">@game.Date</td>
+					<td class="row-cols-5" style="text-align:center">@GetWinnerType(game.WinnerType)</td>
 				</tr>
 			}
 		</table>
 	</Authorized>
 	<NotAuthorized>
 		<h3>Для просмотра данной страницы, пожалуйста, <b>зарегистрируйтесь</b> на платформе. 
-			это не займёт много врмени!</h3>
+			Это не займёт много врмени!</h3>
 	</NotAuthorized>
 </AuthorizeView>
 
@@ -57,4 +71,22 @@
 	//string userName = DbContext.Users.First(x => x.UserName == context.Identity.User.Name).UserName;
 
 	Player? CurrentPlayer { get; set; }
+
+	string GetWinnerType(WinnerType type)
+	{
+		if (type == WinnerType.CrossPlayer) return "Крестики";
+		else if (type == WinnerType.ZeroPlayer) return "Нолики";
+		else return "Ничья";
+	}
+
+	string GetMovesInText(List<Data.Models.Move>? moves)
+	{
+		if (moves == null) return "";
+		var builder = new StringBuilder();
+		foreach(var move in moves)
+		{
+			builder.Append($"{move.Row},{move.Col}:{move.Mark.ToString()}");
+		}
+		return builder.ToString();
+	}
 }

@@ -1,0 +1,84 @@
+﻿@page "/wait/{GameId}"
+@using Microsoft.AspNetCore.Components;
+@using Microsoft.AspNetCore.Components.Authorization;
+@using TicTacToeWebApp.Controllers.Abstractions;
+@using TicTacToeWebApp.Controllers.Core;
+@using TicTacToeWebApp.Data.Abstractions;
+@using TicTacToeWebApp.Data.Models;
+@using System.Security.Claims;
+@using Microsoft.AspNetCore.SignalR.Client;
+@inject NavigationManager NavigationManager;
+@inject AuthenticationStateProvider AuthStateProvider;
+@inject IGameWaiter gameWaiter
+@inject IDbAccess dbAccess
+
+<div class="timer">
+    <h1>Ожидание соперника... : @WaiTimer</h1>
+</div>
+
+@code{
+    [Parameter]
+    public string GameId { get; set; }
+
+    private Game currentGame;
+    private string userName;
+    private bool isSecondPlayerJoined = false;
+    private HubConnection hubConnection;
+    private System.Timers.Timer Timer;
+    public int WaiTimer { get; set; } = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        SetTimer();
+        var state = await AuthStateProvider.GetAuthenticationStateAsync().ConfigureAwait(false);
+
+        //check redirect
+        var currentPlayer = await dbAccess.GetPlayerByNameAsync(state.User.Identity.Name).ConfigureAwait(false);
+
+        //todo cancellation
+        var (game, first) = await gameWaiter.WaitGameAsync(currentPlayer, CancellationToken.None).ConfigureAwait(false);
+
+        if (first)
+        {
+            await dbAccess.AddGameAsync(game, game.CrossPlayer.Name, game.ZeroPlayer.Name).ConfigureAwait(false);
+        }
+        else
+        {
+            await Task.Delay(350);
+        }
+
+        NavigationManager.NavigateTo($"/game/{game.Guid}");
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (isSecondPlayerJoined)
+        {
+            NavigationManager.NavigateTo($"/game/{GameId}");
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection != null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+
+    void SetTimer()
+    {
+        Timer = new System.Timers.Timer
+            {
+                Interval = 1000
+            };
+
+        Timer.Elapsed += (sender, args) =>
+        {
+            WaiTimer++;
+            InvokeAsync(StateHasChanged);
+        };
+
+        Timer.Start();
+    }
+}

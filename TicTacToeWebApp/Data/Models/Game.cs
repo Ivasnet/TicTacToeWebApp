@@ -9,6 +9,7 @@ namespace TicTacToeWebApp.Data.Models
     {
         [Key]
         public int Id { get; set; }
+        public string Guid { get; set; }
         public DateTime? Date { get; set; }
         public Player? CrossPlayer { get; set; }
         public Player? ZeroPlayer { get; set; }

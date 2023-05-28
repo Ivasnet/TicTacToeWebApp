@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.EntityFrameworkCore;
+using TicTacToeWebApp.Controllers.Abstractions;
+using TicTacToeWebApp.Controllers.Core;
 using TicTacToeWebApp.Data;
-using TicTacToeWebApp.Data.Abstractions;
-using TicTacToeWebApp.Data.Controllers;
 using TicTacToeWebApp.Data.Models;
+using TicTacToeWebApp.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,11 +15,18 @@ options.UseSqlite("DataSource=app.db"));
 
 builder.Services.AddDefaultIdentity<AppUser>()
     .AddEntityFrameworkStores<AppDbContext>();
-builder.Services.AddRazorPages();
+
+builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddDbServices();
+
 builder.Services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
-builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddSingleton<IGameController, GameController>();
+
+builder.Services.AddSingleton<IGameWaiter, GameWaiter>();
+
+
+builder.Services.AddSignalR();
 
 //builder.WebHost.UseUrls("http://192.168.0.104:9876", "http://localhost:9876");
 
@@ -28,7 +36,7 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    
     app.UseHsts();
 }
 
@@ -40,6 +48,11 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapHub<GameHub>("/gameHub");
+});
 
 app.MapControllers();
 app.MapBlazorHub();

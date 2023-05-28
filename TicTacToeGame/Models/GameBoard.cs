@@ -2,13 +2,14 @@
 {
 	public class Board
 	{
-		public Cell[][] Cells { get; private set; }
+		public Cell[][] Cells { get; set; }
+		public List<Move> Moves { get; set; }
 
 		public bool IsBoardFull
 		{
 			get 
 			{ 
-				return Cells.Any(cellsRow => cellsRow.Any(cell => cell.Owner == MarkType.Free)); 
+				return Cells.All(cellsRow => cellsRow.All(cell => cell.Owner != MarkType.Free)); 
 			}
 		}
 
@@ -23,6 +24,7 @@
 					Cells[i][j] = new Cell();
 				}
 			}
+			Moves = new List<Move>();
 		}
 
 		public bool CheckAndPlaceMark(int row, int col, MarkType mark)
@@ -30,6 +32,12 @@
 			if (Cells[row][col].Owner == MarkType.Free)
 			{
 				Cells[row][col].Owner = mark;
+				Moves.Add(new()
+				{
+					Mark = mark,
+					Row = row,
+					Col = col
+				}) ;
 				return true;
 			}
 			return false;
@@ -54,6 +62,25 @@
 			if (IsBoardFull) return WinnerType.Draw;
 
 			return winner;
+		}
+
+		public bool IsNowTurnCross()
+		{
+			int crosses = 0, zeros = 0;
+			for (int i = 0; i < 3; i++)
+			{
+                for (int j = 0; j < 3; j++)
+                {
+					if (Cells[i][j].Owner != MarkType.Free)
+					{
+						if (Cells[i][j].Owner != MarkType.Cross)
+							crosses++;
+						else zeros++;
+
+                    }
+                }
+            }
+            return crosses == zeros;
 		}
 
 		private WinnerType CheckRows()

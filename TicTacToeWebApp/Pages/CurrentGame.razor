@@ -1,0 +1,33 @@
+﻿@page "/game/{GameGuid}"
+@using Microsoft.AspNetCore.SignalR;
+@using Microsoft.AspNetCore.SignalR.Client;
+@using Newtonsoft.Json;
+@using TicTacToeGame.Core;
+@using TicTacToeGame.Models;
+@using TicTacToeWebApp.Controllers.Abstractions;
+@using TicTacToeWebApp.Data.Abstractions;
+@using TicTacToeWebApp.Data.Models
+@using System.Security.Claims
+@inject NavigationManager NavigationManager
+@inject IGameController GameController
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IDbAccess DataBase
+
+<div class="timer">
+    <h1>@TimerText : @PlayersTimer</h1>
+</div>
+
+<div class="board">
+    @for (int i = 0; i < 3; i++) 
+     {
+        <div class="raw">
+        @for (int j = 0; j < 3; j++)
+        {
+            var cellNum = (3 * i) + j;
+            <div class="cell" @onclick="() => MakeMove(cellNum)">
+                    @GetMarkSymbol(CurrentBoard.Cells[i][j].Owner)
+            </div>              
+        }
+        </div>
+     }
+</div>
